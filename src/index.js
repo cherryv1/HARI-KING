@@ -1460,7 +1460,7 @@ export default {
             const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
               method: 'POST',
               headers: { 'Authorization': 'Bearer ' + env.MISTRAL_API_KEY, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ model: 'mistral-small-latest', messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: message }], max_tokens: 800 })
+              body: JSON.stringify({ model: 'mistral-small-latest', messages: [{ role: 'system', content: SYSTEM }, ...history, { role: 'user', content: message }], max_tokens: 800 })
             });
             const d = await r.json();
             reply = d.choices?.[0]?.message?.content;
@@ -1473,7 +1473,7 @@ export default {
             const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
               method: 'POST',
               headers: { 'Authorization': 'Bearer ' + env.GROQ_API_KEY, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: message }], max_tokens: 500, temperature: 0.7 })
+              body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: SYSTEM }, ...history, { role: 'user', content: message }], max_tokens: 500, temperature: 0.7 })
             });
             const d = await r.json();
             reply = d.choices?.[0]?.message?.content;
@@ -1486,13 +1486,22 @@ export default {
             const r = await fetch('https://api.cerebras.ai/v1/chat/completions', {
               method: 'POST',
               headers: { 'Authorization': 'Bearer ' + env.CEREBRAS_API_KEY, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ model: 'llama3.1-8b', messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: message }], max_tokens: 500 })
+              body: JSON.stringify({ model: 'llama3.1-8b', messages: [{ role: 'system', content: SYSTEM }, ...history, { role: 'user', content: message }], max_tokens: 500 })
             });
             const d = await r.json();
             reply = d.choices?.[0]?.message?.content;
           } catch(e) {}
         }
         
+        // Guardar en KV
+        if (reply) {
+          try {
+            history.push({ role: 'user', content: message });
+            history.push({ role: 'assistant', content: reply });
+            if (history.length > 20) history = history.slice(-20);
+            await env.SESSIONS.put(sessKey, JSON.stringify(history), { expirationTtl: 86400 });
+          } catch(e) {}
+        }
         return jsonRes({ reply: reply || 'HARI sin respuesta — verificar APIs', ok: true });
       } catch(e) {
         return jsonRes({ error: e.message }, 500);
