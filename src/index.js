@@ -32,7 +32,7 @@ function getDashboard() {
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>HARI-KING — Centro de Control</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
@@ -497,8 +497,61 @@ body{
 .hk-msg-user,.hk-msg-bot,.hk-msg-system{animation:msgIn .2s ease;}
 
 @media(max-width:768px){
-  .hk-grid{grid-template-columns:1fr;}
-  .hk-panel:not(:last-child){display:none;}
+  body{overflow:hidden;}
+  .hk-grid{
+    grid-template-columns:1fr;
+    grid-template-rows:1fr;
+    height:calc(100vh - 44px - 56px);
+  }
+  .hk-panel{display:none !important;}
+  .hk-panel.active-tab{display:flex !important;flex-direction:column;}
+  .hk-panel:last-child{border-right:1px solid var(--border);}
+  .hk-header{padding:8px 14px;}
+  .hk-logo{font-size:13px;}
+  .hk-status span:not(:first-child){display:none;}
+  #hk-avatar-canvas{height:160px !important;}
+  .hk-chat-wrap{height:100%;display:flex;flex-direction:column;}
+  .hk-chat-msgs{flex:1;overflow-y:auto;}
+  .hk-input-area{flex-shrink:0;padding:8px;}
+  #hk-input{font-size:14px;}
+}
+
+/* Bottom Navigation */
+#hk-bottom-nav{display:none;}
+@media(max-width:768px){
+  #hk-bottom-nav{
+    display:flex;
+    position:fixed;
+    bottom:0;left:0;right:0;
+    height:56px;
+    background:rgba(4,2,15,0.98);
+    border-top:1px solid rgba(255,179,0,0.2);
+    backdrop-filter:blur(12px);
+    z-index:9999;
+  }
+  .hk-nav-btn{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    cursor:pointer;
+    border:none;
+    background:none;
+    color:rgba(255,179,0,0.4);
+    font-family:"Share Tech Mono",monospace;
+    font-size:9px;
+    letter-spacing:0.06em;
+    transition:all .2s;
+    padding:0;
+  }
+  .hk-nav-btn.active{color:var(--honey);}
+  .hk-nav-btn.active .hk-nav-icon{
+    text-shadow:0 0 10px var(--honey);
+    transform:scale(1.15);
+  }
+  .hk-nav-icon{font-size:20px;transition:all .2s;}
 }
 </style>
 </head>
@@ -1237,6 +1290,82 @@ loadClients();
 loadMetrics();
 setInterval(loadMetrics, 30000);
 setInterval(loadClients, 60000);
+
+// ── TABS MÓVIL ─────────────────────────────────────────────
+function initTabs() {
+  if (window.innerWidth > 768) return;
+  const panels = document.querySelectorAll('.hk-panel');
+  // Activar tab chat por defecto
+  panels.forEach(p => p.classList.remove('active-tab'));
+  panels[2].classList.add('active-tab');
+
+  document.querySelectorAll('.hk-nav-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tab = parseInt(this.dataset.tab);
+      panels.forEach(p => p.classList.remove('active-tab'));
+      panels[tab].classList.add('active-tab');
+      document.querySelectorAll('.hk-nav-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      // Si es tab chat, enfocar input
+      if (tab === 2) {
+        setTimeout(() => {
+          const input = document.getElementById('hk-input');
+          if (input) input.focus();
+        }, 100);
+      }
+    });
+  });
+
+  // Activar botón chat por defecto
+  document.querySelector('.hk-nav-btn[data-tab="2"]').classList.add('active');
+}
+
+window.addEventListener('load', initTabs);
+window.addEventListener('resize', () => {
+  if (window.innerWidth <= 768) initTabs();
+  else document.querySelectorAll('.hk-panel').forEach(p => {
+    p.classList.remove('active-tab');
+    p.style.display = '';
+  });
+});
+</script>
+
+<!-- BOTTOM NAV MÓVIL -->
+<div id="hk-bottom-nav">
+  <button class="hk-nav-btn" data-tab="0">
+    <span class="hk-nav-icon">⚙️</span>
+    <span>CONTROL</span>
+  </button>
+  <button class="hk-nav-btn" data-tab="1">
+    <span class="hk-nav-icon">🔗</span>
+    <span>ACCESOS</span>
+  </button>
+  <button class="hk-nav-btn active" data-tab="2">
+    <span class="hk-nav-icon">💬</span>
+    <span>CHAT</span>
+  </button>
+  <button class="hk-nav-btn" data-tab="3" onclick="showBeeModal()">
+    <span class="hk-nav-icon">🐝</span>
+    <span>HARI</span>
+  </button>
+</div>
+
+<!-- MODAL ABEJA MÓVIL -->
+<div id="bee-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,2,15,0.97);flex-direction:column;align-items:center;justify-content:center;">
+  <div id="hk-avatar-canvas-modal" style="width:100%;height:60vh;position:relative;">
+    <canvas id="hk-3d-modal" style="width:100%;height:100%;display:block;"></canvas>
+    <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);border:1px solid rgba(255,179,0,0.3);border-radius:20px;padding:4px 16px;font-size:10px;color:var(--honey);font-family:Share Tech Mono,monospace;letter-spacing:0.12em;">⬡ HARI-KING</div>
+  </div>
+  <button onclick="hideBeeModal()" style="margin-top:20px;background:rgba(255,179,0,0.1);border:1px solid rgba(255,179,0,0.3);border-radius:12px;padding:10px 30px;color:var(--honey);font-family:Share Tech Mono,monospace;font-size:12px;cursor:pointer;">✕ CERRAR</button>
+</div>
+
+<script>
+function showBeeModal() {
+  document.getElementById('bee-modal').style.display = 'flex';
+}
+function hideBeeModal() {
+  document.getElementById('bee-modal').style.display = 'none';
+}
 </script>
 </body>
 </html>`;
