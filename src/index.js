@@ -520,7 +520,7 @@ body{
   .hk-chat-wrap{height:100%;display:flex;flex-direction:column;}
   .hk-chat-msgs{flex:1;overflow-y:auto;}
   .hk-input-area{flex-shrink:0;padding:8px;}
-  #hk-input{font-size:14px;}
+  #hk-input{font-size:14px;color:#e8d5a0;background:rgba(255,179,0,0.1);-webkit-text-fill-color:#e8d5a0;opacity:1;}
 }
 
 /* Bottom Navigation */
@@ -1301,7 +1301,7 @@ setInterval(loadClients, 60000);
 // ── TABS MÓVIL ─────────────────────────────────────────────
 function initTabs() {
   if (window.innerWidth > 768) return;
-  const panels = document.querySelectorAll('.hk-panel');
+  const panels = document.querySelectorAll('.hk-grid > .hk-panel');
   // Activar tab chat por defecto
   panels.forEach(p => p.classList.remove('active-tab'));
   panels[2].classList.add('active-tab');
