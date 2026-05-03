@@ -418,15 +418,17 @@ body{
 }
 #hk-input{
   flex:1;
-  background:rgba(0,0,0,0.4);
-  border:1px solid rgba(255,179,0,0.2);
+  background:rgba(30,20,5,0.95);
+  border:1px solid rgba(255,179,0,0.4);
   border-radius:10px;
-  color:var(--text);
+  color:#FFB300;
   font-family:'Share Tech Mono',monospace;
-  font-size:12px;
-  padding:8px 12px;
+  font-size:14px;
+  padding:10px 14px;
   outline:none;
   transition:border-color .2s;
+  -webkit-text-fill-color:#FFB300;
+  opacity:1;
 }
 #hk-input:focus{border-color:rgba(255,179,0,0.5);}
 #hk-input::placeholder{color:var(--dim);}
@@ -728,7 +730,7 @@ body{
         <div class="hk-input-row">
           <label class="hk-img-btn" for="hk-img-input" title="Adjuntar imagen">🖼</label>
           <input type="file" id="hk-img-input" accept="image/*" style="display:none;" onchange="onHKImg(event)"/>
-          <input id="hk-input" placeholder="Habla con HARI-KING..." onkeydown="if(event.key==='Enter')sendHK();"/>
+          <input id="hk-input" placeholder="Habla con HARI-KING..." onkeydown="if(event.key==='Enter')sendHK();" style="flex:1;background:#1a0f00;border:2px solid #FFB300;border-radius:10px;color:#FFB300;font-size:15px;padding:10px 14px;outline:none;-webkit-text-fill-color:#FFB300;width:100%;"/>
           <button class="hk-send-btn" onclick="sendHK()">➤</button>
         </div>
         <div id="hk-img-preview" style="display:none;position:relative;width:fit-content;">
