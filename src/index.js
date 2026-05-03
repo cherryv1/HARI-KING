@@ -1389,6 +1389,38 @@ function showBeeModal() {
 function hideBeeModal() {
   document.getElementById('bee-modal').style.display = 'none';
 }
+
+<div id="bra-supervisor" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:#04020f;border:1px solid #FFB300;border-radius:12px;padding:20px;width:320px;max-height:80vh;overflow-y:auto;">
+  <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+    <span style="color:#FFB300;font-family:Orbitron,monospace;font-size:.85em;">⬡ BRA GT STATUS</span>
+    <button onclick="document.getElementById('bra-supervisor').style.display='none'" style="background:none;border:none;color:#FFB300;cursor:pointer;">✕</button>
+  </div>
+  <div id="bra-data" style="font-size:.8em;line-height:1.8;color:#e8d5a0;">Cargando...</div>
+</div>
+<script>
+async function supervisarBRA() {
+  document.getElementById('bra-supervisor').style.display='block';
+  const el = document.getElementById('bra-data');
+  try {
+    const BRA = 'https://black-lily-elite.cherry-v1pro.workers.dev';
+    const [health, metrics, rules] = await Promise.all([
+      fetch(BRA+'/health').then(r=>r.json()),
+      fetch(BRA+'/api/metrics').then(r=>r.json()),
+      fetch(BRA+'/admin/list-rules').then(r=>r.json())
+    ]);
+    el.innerHTML =
+      '<b style="color:#FFB300">ESTADO:</b> ' + (health.status||'?') + '<br>' +
+      '<b style="color:#FFB300">VERSIÓN:</b> ' + (health.version||'?') + '<br>' +
+      '<b style="color:#FFB300">CLIENTES:</b> ' + (metrics.totalClientes||0) + '<br>' +
+      '<b style="color:#FFB300">CONVERSIONES:</b> ' + (metrics.totalConversiones||0) + '<br>' +
+      '<b style="color:#FFB300">ENGAGEMENT:</b> ' + (metrics.engagementPromedio?metrics.engagementPromedio.toFixed(1):'0') + '<br>' +
+      '<b style="color:#FFB300">REGLAS RLHF:</b> ' + (rules.rules?.length||0) + '<br>' +
+      '<b style="color:#FFB300">TIMESTAMP:</b> ' + new Date().toLocaleTimeString();
+  } catch(e) {
+    el.innerHTML = '<span style="color:#ff4444">Error: ' + e.message + '</span>';
+  }
+}
+</script>
 </script>
 </body>
 </html>`;
