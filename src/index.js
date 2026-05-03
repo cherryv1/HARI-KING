@@ -1327,6 +1327,22 @@ function initTabs() {
   document.querySelector('.hk-nav-btn[data-tab="2"]').classList.add('active');
 }
 
+// Fix teclado móvil
+const originalHeight = window.innerHeight;
+window.addEventListener('resize', function() {
+  const activeTab = document.querySelector('.hk-panel.active-tab');
+  if (!activeTab) return;
+  const keyboardOpen = window.innerHeight < originalHeight * 0.75;
+  const nav = document.getElementById('hk-bottom-nav');
+  if (keyboardOpen) {
+    nav.style.display = 'none';
+    activeTab.style.height = window.innerHeight + 'px';
+  } else {
+    nav.style.display = 'flex';
+    activeTab.style.height = '';
+  }
+});
+
 window.addEventListener('load', initTabs);
 window.addEventListener('resize', () => {
   if (window.innerWidth <= 768) initTabs();
