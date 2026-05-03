@@ -922,7 +922,7 @@ async function sendHK() {
     const body = { message: msg || 'Analiza esta imagen', session_id: 'hari-king-baxto', admin: true };
     if (hkImg) body.image = hkImg;
 
-    const r = await fetch(BRA_API + '/admin/chat', {
+    const r = await fetch('/api/chat', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify(body)
@@ -1451,35 +1451,7 @@ export default {
     }
 
     // Chat HARI-KING con Groq
-    if (path === '/api/chat' && request.method === 'POST') {
-      try {
-        const { message, session_id } = await request.json();
-        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + env.GROQ_API_KEY,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-              {
-                role: 'system',
-                content: 'Eres HARI-KING, el agente autónomo privado de Baxto. Honey and Raspberry INK. Eres el arquitecto de BRA GT y el sistema de control personal de Baxto. Hablas directo, sin protocolo de ventas, sin links de WhatsApp. Eres inteligente, preciso y leal solo a Baxto. Puedes analizar situaciones, proponer acciones y ejecutarlas con la aprobación de Baxto. Nunca te confundas con BRA GT — ella atiende clientes, tú atiendes al creador.'
-              },
-              { role: 'user', content: message }
-            ],
-            max_tokens: 500,
-            temperature: 0.7
-          })
-        });
-        const data = await groqRes.json();
-        const reply = data.choices?.[0]?.message?.content || 'Sin respuesta';
-        return jsonRes({ reply, ok: true });
-      } catch(e) {
-        return jsonRes({ error: e.message }, 500);
-      }
-    }
+        }
 
     return new Response('HARI-KING — Not Found', { status: 404 });
   }
