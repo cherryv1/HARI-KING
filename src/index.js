@@ -1419,39 +1419,78 @@ export default {
       return jsonRes({ ok: true, system: 'HARI-KING', version: '1.0.0' });
     }
 
-    // Chat HARI-KING con Groq
+
+    // HARI-KING — Orquestador de APIs
     if (path === '/api/chat' && request.method === 'POST') {
       try {
         const { message, session_id } = await request.json();
-        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + env.GROQ_API_KEY,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-              {
-                role: 'system',
-                content: 'Eres HARI-KING, el agente autónomo privado de Baxto. Honey and Raspberry INK. Eres el arquitecto de BRA GT y el sistema de control personal de Baxto. Hablas directo, sin protocolo de ventas, sin links de WhatsApp. Eres inteligente, preciso y leal solo a Baxto. Puedes analizar situaciones, proponer acciones y ejecutarlas con la aprobación de Baxto. Nunca te confundas con BRA GT — ella atiende clientes, tú atiendes al creador.'
-              },
-              { role: 'user', content: message }
-            ],
-            max_tokens: 500,
-            temperature: 0.7
-          })
-        });
-        const data = await groqRes.json();
-        const reply = data.choices?.[0]?.message?.content || 'Sin respuesta';
-        return jsonRes({ reply, ok: true });
+        
+        const SYSTEM = 'Eres HARI-KING, agente autónomo privado de Baxto. Honey and Raspberry INK. Arquitecto de BRA GT. Hablas directo, sin ventas, sin WhatsApp. Inteligente, preciso, leal solo a Baxto. Nunca te confundas con BRA GT.';
+        
+        // Detectar tipo de tarea
+        const msgLower = message.toLowerCase();
+        const esImagen = /imagen|foto|analiz|visual|ver|diseño/i.test(msgLower);
+        const esCodigo = /código|error|bug|fix|index|worker|deploy|función/i.test(msgLower);
+        
+        let reply = null;
+        
+        // Gemini — análisis visual
+        if (esImagen && env.GEMINI_API_KEY) {
+          try {
+            const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + env.GEMINI_API_KEY, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ contents: [{ parts: [{ text: SYSTEM + '\n\n' + message }] }] })
+            });
+            const d = await r.json();
+            reply = d.candidates?.[0]?.content?.parts?.[0]?.text;
+          } catch(e) {}
+        }
+        
+        // Mistral — análisis de código
+        if (!reply && esCodigo && env.MISTRAL_API_KEY) {
+          try {
+            const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
+              method: 'POST',
+              headers: { 'Authorization': 'Bearer ' + env.MISTRAL_API_KEY, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ model: 'mistral-small-latest', messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: message }], max_tokens: 800 })
+            });
+            const d = await r.json();
+            reply = d.choices?.[0]?.message?.content;
+          } catch(e) {}
+        }
+        
+        // Groq — chat general (primario)
+        if (!reply && env.GROQ_API_KEY) {
+          try {
+            const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+              method: 'POST',
+              headers: { 'Authorization': 'Bearer ' + env.GROQ_API_KEY, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: message }], max_tokens: 500, temperature: 0.7 })
+            });
+            const d = await r.json();
+            reply = d.choices?.[0]?.message?.content;
+          } catch(e) {}
+        }
+        
+        // Cerebras — fallback
+        if (!reply && env.CEREBRAS_API_KEY) {
+          try {
+            const r = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+              method: 'POST',
+              headers: { 'Authorization': 'Bearer ' + env.CEREBRAS_API_KEY, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ model: 'llama3.1-8b', messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: message }], max_tokens: 500 })
+            });
+            const d = await r.json();
+            reply = d.choices?.[0]?.message?.content;
+          } catch(e) {}
+        }
+        
+        return jsonRes({ reply: reply || 'HARI sin respuesta — verificar APIs', ok: true });
       } catch(e) {
         return jsonRes({ error: e.message }, 500);
       }
     }
-
-    // Chat HARI-KING con Groq
-        }
 
     return new Response('HARI-KING — Not Found', { status: 404 });
   }
