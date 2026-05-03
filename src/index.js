@@ -404,17 +404,22 @@ body{
 
 /* Input area */
 .hk-input-area{
-  padding:10px 12px;
+  padding:12px;
   border-top:1px solid var(--border);
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:8px;
   flex-shrink:0;
+  background:rgba(10,6,0,0.98);
 }
 .hk-input-row{
   display:flex;
-  gap:6px;
-  align-items:center;
+  gap:8px;
+  align-items:flex-end;
+  background:#1a0f00;
+  border:2px solid #FFB300;
+  border-radius:16px;
+  padding:10px 12px;
 }
 #hk-input{
   flex:1;
@@ -730,7 +735,7 @@ body{
         <div class="hk-input-row">
           <label class="hk-img-btn" for="hk-img-input" title="Adjuntar imagen">🖼</label>
           <input type="file" id="hk-img-input" accept="image/*" style="display:none;" onchange="onHKImg(event)"/>
-          <input id="hk-input" placeholder="Habla con HARI-KING..." onkeydown="if(event.key==='Enter')sendHK();" style="flex:1;background:#1a0f00;border:2px solid #FFB300;border-radius:10px;color:#FFB300;font-size:15px;padding:10px 14px;outline:none;-webkit-text-fill-color:#FFB300;width:100%;"/>
+          <input id="hk-input" placeholder="Habla con HARI-KING..." onkeydown="if(event.key==='Enter')sendHK();" style="flex:1;background:transparent;border:none;color:#FFB300;font-size:16px;padding:4px 0;outline:none;-webkit-text-fill-color:#FFB300;width:100%;min-height:24px;"/>
           <button class="hk-send-btn" onclick="sendHK()">➤</button>
         </div>
         <div id="hk-img-preview" style="display:none;position:relative;width:fit-content;">
