@@ -1508,6 +1508,30 @@ export default {
       }
     }
 
+
+    // HARI supervisa BRA GT
+    if (path === '/api/supervisar' && request.method === 'GET') {
+      try {
+        const BRA = 'https://black-lily-elite.cherry-v1pro.workers.dev';
+        const [health, metrics, rules] = await Promise.all([
+          fetch(BRA + '/health').then(r => r.json()),
+          fetch(BRA + '/api/metrics').then(r => r.json()),
+          fetch(BRA + '/admin/list-rules').then(r => r.json())
+        ]);
+        return jsonRes({
+          ok: true,
+          bra_status: health.status || 'unknown',
+          total_clientes: metrics.totalClientes || 0,
+          conversiones: metrics.totalConversiones || 0,
+          engagement: metrics.engagementPromedio || 0,
+          reglas_activas: rules.rules?.length || 0,
+          timestamp: new Date().toISOString()
+        });
+      } catch(e) {
+        return jsonRes({ ok: false, error: e.message }, 500);
+      }
+    }
+
     return new Response('HARI-KING — Not Found', { status: 404 });
   }
 };
