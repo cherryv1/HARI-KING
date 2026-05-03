@@ -1513,10 +1513,11 @@ export default {
     if (path === '/api/supervisar' && request.method === 'GET') {
       try {
         const BRA = 'https://black-lily-elite.cherry-v1pro.workers.dev';
+        const opts = { headers: { 'X-Hari-Auth': 'hari-king-2026', 'User-Agent': 'HARI-KING/1.0' } };
         const [health, metrics, rules] = await Promise.all([
-          fetch(BRA + '/health').then(r => r.json()),
-          fetch(BRA + '/api/metrics').then(r => r.json()),
-          fetch(BRA + '/admin/list-rules').then(r => r.json())
+          fetch(BRA + '/health', opts).then(r => r.json()),
+          fetch(BRA + '/api/metrics', opts).then(r => r.json()),
+          fetch(BRA + '/admin/list-rules', opts).then(r => r.json())
         ]);
         return jsonRes({
           ok: true,
