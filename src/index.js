@@ -735,7 +735,7 @@ body{
         <div class="hk-input-row">
           <label class="hk-img-btn" for="hk-img-input" title="Adjuntar imagen">🖼</label>
           <input type="file" id="hk-img-input" accept="image/*" style="display:none;" onchange="onHKImg(event)"/>
-          <input id="hk-input" placeholder="Habla con HARI-KING..." onkeydown="if(event.key==='Enter')sendHK();" style="flex:1;background:transparent;border:none;color:#FFB300;font-size:16px;padding:4px 0;outline:none;-webkit-text-fill-color:#FFB300;width:100%;min-height:24px;"/>
+          <input id="hk-input" placeholder="Habla con HARI-KING..." onkeydown="if(event.key==='Enter')sendHK();" style="flex:1;background:transparent;border:none;color:#FFB300 !important;font-size:16px;padding:4px 0;outline:none;-webkit-text-fill-color:#FFB300 !important;-webkit-opacity:1;width:100%;min-height:28px;caret-color:#FFB300;"/>
           <button class="hk-send-btn" onclick="sendHK()">➤</button>
         </div>
         <div id="hk-img-preview" style="display:none;position:relative;width:fit-content;">
@@ -1417,6 +1417,68 @@ export default {
     // Health check
     if (path === '/health') {
       return jsonRes({ ok: true, system: 'HARI-KING', version: '1.0.0' });
+    }
+
+    // Chat HARI-KING con Groq
+    if (path === '/api/chat' && request.method === 'POST') {
+      try {
+        const { message, session_id } = await request.json();
+        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + env.GROQ_API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              {
+                role: 'system',
+                content: 'Eres HARI-KING, el agente autónomo privado de Baxto. Honey and Raspberry INK. Eres el arquitecto de BRA GT y el sistema de control personal de Baxto. Hablas directo, sin protocolo de ventas, sin links de WhatsApp. Eres inteligente, preciso y leal solo a Baxto. Puedes analizar situaciones, proponer acciones y ejecutarlas con la aprobación de Baxto. Nunca te confundas con BRA GT — ella atiende clientes, tú atiendes al creador.'
+              },
+              { role: 'user', content: message }
+            ],
+            max_tokens: 500,
+            temperature: 0.7
+          })
+        });
+        const data = await groqRes.json();
+        const reply = data.choices?.[0]?.message?.content || 'Sin respuesta';
+        return jsonRes({ reply, ok: true });
+      } catch(e) {
+        return jsonRes({ error: e.message }, 500);
+      }
+    }
+
+    // Chat HARI-KING con Groq
+    if (path === '/api/chat' && request.method === 'POST') {
+      try {
+        const { message, session_id } = await request.json();
+        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + env.GROQ_API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              {
+                role: 'system',
+                content: 'Eres HARI-KING, el agente autónomo privado de Baxto. Honey and Raspberry INK. Eres el arquitecto de BRA GT y el sistema de control personal de Baxto. Hablas directo, sin protocolo de ventas, sin links de WhatsApp. Eres inteligente, preciso y leal solo a Baxto. Puedes analizar situaciones, proponer acciones y ejecutarlas con la aprobación de Baxto. Nunca te confundas con BRA GT — ella atiende clientes, tú atiendes al creador.'
+              },
+              { role: 'user', content: message }
+            ],
+            max_tokens: 500,
+            temperature: 0.7
+          })
+        });
+        const data = await groqRes.json();
+        const reply = data.choices?.[0]?.message?.content || 'Sin respuesta';
+        return jsonRes({ reply, ok: true });
+      } catch(e) {
+        return jsonRes({ error: e.message }, 500);
+      }
     }
 
     return new Response('HARI-KING — Not Found', { status: 404 });
