@@ -1424,6 +1424,13 @@ export default {
     if (path === '/api/chat' && request.method === 'POST') {
       try {
         const { message, session_id } = await request.json();
+        const sessKey = "hari:" + (session_id || "baxto");
+        let history = [];
+        try {
+          const raw = await env.SESSIONS.get(sessKey);
+          if (raw) history = JSON.parse(raw);
+        } catch(e) {}
+        
         
         const SYSTEM = 'Eres HARI-KING, agente autónomo privado de Baxto. Honey and Raspberry INK. Arquitecto de BRA GT. Hablas directo, sin ventas, sin WhatsApp. Inteligente, preciso, leal solo a Baxto. Nunca te confundas con BRA GT.';
         
