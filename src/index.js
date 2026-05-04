@@ -1560,6 +1560,10 @@ export default {
             const d = await r.json();
             reply = d.candidates?.[0]?.content?.parts?.[0]?.text;
           } catch(e) { reply = 'GEMINI_ERROR: ' + e.message; }
+          if (!reply) {
+            // Gemini respondió pero sin texto — ver raw
+            reply = 'GEMINI_NO_TEXT: key presente, imagen presente, pero sin respuesta';
+          }
         }
 
         // Debug log
