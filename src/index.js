@@ -559,6 +559,14 @@ body{
   }
   .hk-nav-icon{font-size:20px;transition:all .2s;}
 }
+
+/* FIX ANDROID HARI-KING */
+@media (max-width: 768px) {
+  .hk-grid { display: flex !important; flex-direction: column !important; height: calc(100dvh - 100px) !important; }
+  .hk-panel.active-tab { display: flex !important; flex-direction: column !important; flex: 1 !important; height: 100% !important; }
+  .hk-input-area { position: sticky !important; bottom: 0 !important; background: #04020f !important; z-index: 1000 !important; }
+  #hk-input { font-size: 16px !important; color: #FFB300 !important; -webkit-text-fill-color: #FFB300 !important; }
+}
 </style>
 </head>
 <body>
@@ -1421,7 +1429,19 @@ async function supervisarBRA() {
 }
 </script>
 </script>
-</body>
+<script>
+// Fix visibilidad inicial mobile
+setTimeout(() => {
+  if(window.innerWidth <= 768) {
+    const p = document.querySelectorAll(".hk-panel");
+    const b = document.querySelectorAll(".hk-nav-btn");
+    if(p[2] && b[2] && !document.querySelector(".hk-panel.active-tab")) { 
+      p[2].classList.add("active-tab"); 
+      b[2].classList.add("active"); 
+    }
+  }
+}, 500);
+</script></body>
 </html>`;
   return new Response(html, {
     headers: { 'Content-Type': 'text/html;charset=UTF-8' }
