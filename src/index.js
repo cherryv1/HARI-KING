@@ -1544,26 +1544,33 @@ export default {
         
         let reply = null;
         
-        // Gemini — análisis visual con imagen real
-        if (esImagen && env.GEMINI_API_KEY) {
+        // Groq llama-4-scout — visión real
+        if (imageBase64 && env.GROQ_API_KEY) {
           try {
-            const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + env.GEMINI_API_KEY, {
+            const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+            const mimeType = imageBase64.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/jpeg';
+            const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ contents: [{ parts: imageBase64 ? [
-                { text: SYSTEM + '\n\n' + (message || 'Analiza esta imagen en detalle como HARI-KING') },
-                { inline_data: { mime_type: 'image/jpeg', data: imageBase64.replace(/^data:image\/\w+;base64,/, '') } }
-              ] : [
-                { text: SYSTEM + '\n\n' + message }
-              ]}] })
+              headers: {
+                'Authorization': 'Bearer ' + env.GROQ_API_KEY,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+                messages: [{
+                  role: 'user',
+                  content: [
+                    { type: 'text', text: SYSTEM + '\n\n' + (message || 'Analiza esta imagen en detalle') },
+                    { type: 'image_url', image_url: { url: 'data:' + mimeType + ';base64,' + base64Data } }
+                  ]
+                }],
+                max_tokens: 800,
+                temperature: 0.7
+              })
             });
             const d = await r.json();
-            reply = d.candidates?.[0]?.content?.parts?.[0]?.text;
-          } catch(e) { reply = 'GEMINI_ERROR: ' + e.message; }
-          if (!reply) {
-            // Gemini respondió pero sin texto — ver raw
-            reply = 'GEMINI_NO_TEXT: key presente, imagen presente, pero sin respuesta';
-          }
+            reply = d.choices?.[0]?.message?.content;
+          } catch(e) { reply = 'VISION_ERROR: ' + e.message; }
         }
 
         // Debug log
