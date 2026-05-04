@@ -522,7 +522,6 @@ body{
   .hk-input-area{flex-shrink:0;padding:8px;width:100%;}
   #hk-input{font-size:16px;color:#FFB300;-webkit-text-fill-color:#FFB300;caret-color:#FFB300;background:rgba(255,179,0,0.1);opacity:1;}
 }
-
 /* Bottom Navigation */
 #hk-bottom-nav{display:none;}
 @media(max-width:768px){
