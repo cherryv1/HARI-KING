@@ -506,22 +506,21 @@ body{
 @media(max-width:768px){
   body{overflow:hidden;}
   .hk-grid{
-    grid-template-columns:1fr;
-    grid-template-rows:1fr;
+    display:flex;
+    flex-direction:column;
     height:calc(100vh - 44px - 56px);
-    height:calc(100vh - 44px - 56px);
-    overflow:auto;
-  .hk-panel{display:none !important;}
-  .hk-panel.active-tab{display:flex !important;flex-direction:column;}
-  .hk-panel:last-child{border-right:1px solid var(--border);}
+    overflow:hidden;
+  }
+  .hk-panel{display:none;}
+  .hk-panel.active-tab{display:flex;flex-direction:column;flex:1;overflow-y:auto;}
   .hk-header{padding:8px 14px;}
   .hk-logo{font-size:13px;}
   .hk-status span:not(:first-child){display:none;}
   #hk-avatar-canvas{height:160px !important;}
-  .hk-chat-wrap{height:100%;display:flex;flex-direction:column;}
+  .hk-chat-wrap{display:flex;flex-direction:column;height:100%;}
   .hk-chat-msgs{flex:1;overflow-y:auto;}
-  .hk-input-area{flex-shrink:0;padding:8px;}
-  #hk-input{font-size:14px;color:#e8d5a0;background:rgba(255,179,0,0.1);-webkit-text-fill-color:#e8d5a0;opacity:1;}
+  .hk-input-area{flex-shrink:0;padding:8px;width:100%;}
+  #hk-input{font-size:16px;color:#FFB300;-webkit-text-fill-color:#FFB300;caret-color:#FFB300;background:rgba(255,179,0,0.1);opacity:1;}
 }
 
 /* Bottom Navigation */
