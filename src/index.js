@@ -1573,12 +1573,6 @@ export default {
           } catch(e) { reply = 'VISION_ERROR: ' + e.message; }
         }
 
-        // Debug log
-        if (esImagen && !reply) {
-          const hasKey = !!env.GEMINI_API_KEY;
-          return jsonRes({ reply: 'DEBUG: esImagen=' + esImagen + ' hasKey=' + hasKey + ' imageBase64=' + (!!imageBase64), ok: true });
-        }
-
         // Mistral — análisis de código
         if (!reply && esCodigo && env.MISTRAL_API_KEY) {
           try {
