@@ -1559,7 +1559,7 @@ export default {
             });
             const d = await r.json();
             reply = d.candidates?.[0]?.content?.parts?.[0]?.text;
-          } catch(e) { console.error('Gemini error:', e.message); }
+          } catch(e) { reply = 'GEMINI_ERROR: ' + e.message; }
         }
 
         // Debug log
