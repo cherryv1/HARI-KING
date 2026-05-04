@@ -1524,7 +1524,9 @@ export default {
     // HARI-KING — Orquestador de APIs
     if (path === '/api/chat' && request.method === 'POST') {
       try {
-        const { message, session_id } = await request.json();
+        const body = await request.json();
+        const { message, session_id } = body;
+        const imageBase64 = body.image || null;
         const sessKey = "hari:" + (session_id || "baxto");
         let history = [];
         try {
@@ -1537,18 +1539,23 @@ export default {
         
         // Detectar tipo de tarea
         const msgLower = message.toLowerCase();
-        const esImagen = /imagen|foto|analiz|visual|ver|diseño/i.test(msgLower);
+        const esImagen = !!imageBase64 || /imagen|foto|analiz|visual|ver|diseño/i.test(msgLower);
         const esCodigo = /código|error|bug|fix|index|worker|deploy|función/i.test(msgLower);
         
         let reply = null;
         
-        // Gemini — análisis visual
+        // Gemini — análisis visual con imagen real
         if (esImagen && env.GEMINI_API_KEY) {
           try {
             const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + env.GEMINI_API_KEY, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ contents: [{ parts: [{ text: SYSTEM + '\n\n' + message }] }] })
+              body: JSON.stringify({ contents: [{ parts: imageBase64 ? [
+                { text: SYSTEM + '\n\n' + (message || 'Analiza esta imagen en detalle como HARI-KING') },
+                { inline_data: { mime_type: 'image/jpeg', data: imageBase64.replace(/^data:image\/\w+;base64,/, '') } }
+              ] : [
+                { text: SYSTEM + '\n\n' + message }
+              ]}] })
             });
             const d = await r.json();
             reply = d.candidates?.[0]?.content?.parts?.[0]?.text;
