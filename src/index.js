@@ -1559,9 +1559,15 @@ export default {
             });
             const d = await r.json();
             reply = d.candidates?.[0]?.content?.parts?.[0]?.text;
-          } catch(e) {}
+          } catch(e) { console.error('Gemini error:', e.message); }
         }
-        
+
+        // Debug log
+        if (esImagen && !reply) {
+          const hasKey = !!env.GEMINI_API_KEY;
+          return jsonRes({ reply: 'DEBUG: esImagen=' + esImagen + ' hasKey=' + hasKey + ' imageBase64=' + (!!imageBase64), ok: true });
+        }
+
         // Mistral — análisis de código
         if (!reply && esCodigo && env.MISTRAL_API_KEY) {
           try {
