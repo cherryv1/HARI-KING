@@ -1301,7 +1301,7 @@ setInterval(loadClients, 60000);
 // ── TABS MÓVIL ─────────────────────────────────────────────
 function initTabs() {
   if (window.innerWidth > 768) return;
-  const panels = document.querySelectorAll('.hk-grid > .hk-panel');
+  const panels = document.querySelectorAll('.hk-panel');
   // Activar tab chat por defecto
   panels.forEach(p => p.classList.remove('active-tab'));
   panels[2].classList.add('active-tab');
