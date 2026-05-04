@@ -567,6 +567,38 @@ body{
   .hk-input-area { position: sticky !important; bottom: 0 !important; background: #04020f !important; z-index: 1000 !important; }
   #hk-input { font-size: 16px !important; color: #FFB300 !important; -webkit-text-fill-color: #FFB300 !important; }
 }
+
+/* --- CORRECCIÓN MAESTRA HARI-KING --- */
+@media (max-width: 768px) {
+  body { overflow: auto !important; height: auto !important; }
+  .hk-header { position: sticky; top: 0; z-index: 10000; background: #04020f !important; }
+  .hk-grid { 
+    display: block !important; 
+    height: auto !important; 
+    overflow: visible !important;
+    padding-bottom: 80px; /* Espacio para la nav */
+  }
+  .hk-panel { 
+    display: none !important; 
+    width: 100% !important; 
+    border: none !important;
+    height: auto !important;
+  }
+  .hk-panel.active-tab { 
+    display: block !important; 
+  }
+  /* Forzar que el avatar no rompa el layout */
+  #hk-avatar-canvas { height: 180px !important; width: 100% !important; }
+  .hk-chat-msgs { height: 350px !important; overflow-y: auto !important; }
+  .hk-input-area { 
+    position: fixed !important; 
+    bottom: 56px !important; 
+    left: 0; right: 0; 
+    background: #0a0600 !important;
+    border-top: 1px solid rgba(255,179,0,0.3) !important;
+  }
+  #hk-bottom-nav { display: flex !important; }
+}
 </style>
 </head>
 <body>
@@ -1441,6 +1473,24 @@ setTimeout(() => {
     }
   }
 }, 500);
+</script><script>
+// Script de Limpieza y Activación
+(function() {
+  const fixTabs = () => {
+    if(window.innerWidth <= 768) {
+      const p = document.querySelectorAll(".hk-panel");
+      const b = document.querySelectorAll(".hk-nav-btn");
+      // Ocultamos todo primero
+      p.forEach(el => el.classList.remove("active-tab"));
+      b.forEach(el => el.classList.remove("active"));
+      // Activamos el Chat (Panel 2)
+      if(p[2]) p[2].classList.add("active-tab");
+      if(b[2]) b[2].classList.add("active");
+    }
+  };
+  window.addEventListener("load", fixTabs);
+  setTimeout(fixTabs, 1000);
+})();
 </script></body>
 </html>`;
   return new Response(html, {
