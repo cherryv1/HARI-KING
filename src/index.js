@@ -509,7 +509,8 @@ body{
     grid-template-columns:1fr;
     grid-template-rows:1fr;
     height:calc(100vh - 44px - 56px);
-  }
+    height:calc(100vh - 44px - 56px);
+    overflow:auto;
   .hk-panel{display:none !important;}
   .hk-panel.active-tab{display:flex !important;flex-direction:column;}
   .hk-panel:last-child{border-right:1px solid var(--border);}
