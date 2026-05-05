@@ -1503,7 +1503,7 @@ setTimeout(() => {
 // ═══════════════════════════════════════════════════════════
 export default {
   
-async function hariCommit(fileName, content, message) {
+async function hariCommit(fileName, content, message, env) {
   const GITHUB_API = "https://api.github.com/repos/cherryv1/HARI-KING/contents/" + fileName;
   // 1. Obtener el SHA del archivo actual
   const res = await fetch(GITHUB_API, {
