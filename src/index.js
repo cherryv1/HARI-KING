@@ -1538,6 +1538,14 @@ async fetch(request, env) {
     }
 
     // Health check
+    if (path === "/admin/execute" && request.method === "POST") {
+      try {
+        const { fileName, content, commitMessage } = await request.json();
+        if (!fileName || !content) return jsonRes({ ok: false, error: "fileName y content requeridos" });
+        const result = await hariCommit(fileName, content, commitMessage || "HARI: cambio aprobado", env);
+        return jsonRes({ ok: true, result });
+      } catch(e) { return jsonRes({ ok: false, error: e.message }); }
+    }
     if (path === '/health') {
       return jsonRes({ ok: true, system: 'HARI-KING', version: '1.0.0' });
     }
