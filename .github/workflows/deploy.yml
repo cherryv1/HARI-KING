@@ -12,4 +12,4 @@ jobs:
           curl -X PUT "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CF_ACCOUNT_ID }}/workers/scripts/hari-king" \
           -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
           -F "metadata={\"main_module\":\"worker.js\",\"bindings\":[]};type=application/json" \
-          -F "worker.js=@src/index.js;type=application/javascript+module"
+          -F "index.js=@src/index.js;type=application/javascript+module"
