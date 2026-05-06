@@ -1,5 +1,14 @@
 // ═══════════════════════════════════════════════════════════
 //  HARI-KING — Agente Autónomo Privado de Baxto
+
+async function hariCommit(fileName, content, message, env) {
+  const GITHUB_API = "https://api.github.com/repos/cherryv1/HARI-KING/contents/" + fileName;
+  const res = await fetch(GITHUB_API, { headers: { "Authorization": `Bearer ${env.GITHUB_TOKEN}`, "User-Agent": "HARI-KING-Agent" } });
+  const fileData = await res.json();
+  const commitRes = await fetch(GITHUB_API, { method: "PUT", headers: { "Authorization": `Bearer ${env.GITHUB_TOKEN}`, "Content-Type": "application/json", "User-Agent": "HARI-KING-Agent" }, body: JSON.stringify({ message: "HARI-AUTONOMOUS: " + message, content: btoa(content), sha: fileData.sha }) });
+  return await commitRes.json();
+}
+
 //  Honey and Raspberry INK
 //  Arquitecto de BRA GT — siempre con ✅ de Baxto
 // ═══════════════════════════════════════════════════════════
@@ -1502,13 +1511,6 @@ setTimeout(() => {
 //  WORKER HANDLER
 // ═══════════════════════════════════════════════════════════
 
-async function hariCommit(fileName, content, message, env) {
-  const GITHUB_API = "https://api.github.com/repos/cherryv1/HARI-KING/contents/" + fileName;
-  const res = await fetch(GITHUB_API, { headers: { "Authorization": `Bearer ${env.GITHUB_TOKEN}`, "User-Agent": "HARI-KING-Agent" } });
-  const fileData = await res.json();
-  const commitRes = await fetch(GITHUB_API, { method: "PUT", headers: { "Authorization": `Bearer ${env.GITHUB_TOKEN}`, "Content-Type": "application/json", "User-Agent": "HARI-KING-Agent" }, body: JSON.stringify({ message: "HARI-AUTONOMOUS: " + message, content: btoa(content), sha: fileData.sha }) });
-  return await commitRes.json();
-}
 export default {
   
 
