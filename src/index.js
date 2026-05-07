@@ -1537,7 +1537,7 @@ async fetch(request, env) {
       } catch(e) { return jsonRes({ ok: false, error: e.message }); }
     }
     if (path === '/health') {
-      return jsonRes({ ok: true, system: 'HARI-KING', version: '1.0.0' });
+      return jsonRes({ ok: true, system: 'HARI-KING', version: '1.1.0' });
     }
 
 
