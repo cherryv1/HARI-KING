@@ -307,7 +307,7 @@ body{
   background:rgba(255,179,0,0.04);
   border:1px solid rgba(255,179,0,0.12);
   border-radius:10px;
-  padding:12px;
+  padding:12px; position: sticky; bottom: 0; position: sticky; bottom: 0;
   cursor:pointer;
   transition:all .25s;
   text-decoration:none;
@@ -351,7 +351,7 @@ body{
 .hk-chat-msgs{
   flex:1;
   overflow-y:auto;
-  padding:12px;
+  padding:12px; position: sticky; bottom: 0;
   display:flex;
   flex-direction:column;
   gap:8px;
@@ -413,7 +413,7 @@ body{
 
 /* Input area */
 .hk-input-area{
-  padding:12px;
+  padding:12px; position: sticky; bottom: 0;
   border-top:1px solid var(--border);
   display:flex;
   flex-direction:column;
@@ -437,7 +437,7 @@ body{
   border-radius:10px;
   color:#FFB300;
   font-family:'Share Tech Mono',monospace;
-  font-size:14px;
+  font-size:16px;
   padding:10px 14px;
   outline:none;
   transition:border-color .2s;
@@ -453,7 +453,7 @@ body{
   color:var(--honey);
   width:36px;height:36px;
   cursor:pointer;
-  font-size:14px;
+  font-size:16px;
   transition:all .2s;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
@@ -469,7 +469,7 @@ body{
   color:var(--amber);
   width:36px;height:36px;
   cursor:pointer;
-  font-size:14px;
+  font-size:16px;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
   transition:all .2s;
@@ -988,7 +988,7 @@ async function sendHK() {
     logAction('Chat: ' + msg.slice(0,40));
 
     // Si la respuesta implica una acción, mostrar panel de aprobación
-    if (reply.toLowerCase().includes('puedo') || reply.toLowerCase().includes('ejecutar') || reply.toLowerCase().includes('deploy')) {
+    const keywords = ["propongo", "cambio", "modificar", "agregar", "fix", "puedo", "ejecutar", "deploy"]; if (keywords.some(k => reply.toLowerCase().includes(k))) {
       showApproval('HARI-KING propone una acción. ¿Apruebas?\\n\\n' + reply);
     }
   } catch(e) {
@@ -1006,7 +1006,7 @@ function showApproval(txt) {
   const panel = document.getElementById('hk-approval');
   document.getElementById('hk-approval-txt').textContent = txt;
   panel.style.display = 'flex';
-  pendingAction = txt;
+  pendingAction = { fileName: "src/index.js", content: txt, commitMessage: "HARI propone: " + txt.substring(0, 50) };
 }
 
 function approveAction() {
