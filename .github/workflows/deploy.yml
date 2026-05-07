@@ -7,9 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Deploy via Cloudflare API
-        run: |
-          curl -X PUT "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CF_ACCOUNT_ID }}/workers/scripts/hari-king" \
-          -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
-          -F "metadata={\"main_module\":\"index.js\",\"bindings\":[]};type=application/json" \
-          -F "index.js=@src/index.js;type=application/javascript+module"
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}

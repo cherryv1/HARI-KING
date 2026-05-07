@@ -1672,6 +1672,87 @@ async fetch(request, env) {
       }
     }
 
+    // ── AGENTE: analizar código y proponer fix ────────────────
+    if (path === '/agent/analyze' && request.method === 'POST') {
+      try {
+        const { task } = await request.json();
+        if (!task) return jsonRes({ error: 'Falta task' }, 400);
+        const { agentLoop } = await import('./agent.js');
+        const result = await agentLoop(task, env);
+        return jsonRes(result);
+      } catch(e) { return jsonRes({ error: e.message }, 500); }
+    }
+
+    // ── AGENTE: aprobar y ejecutar fix ✅ ──────────────────
+    if (path === '/agent/approve' && request.method === 'POST') {
+      try {
+        const { proposalId } = await request.json();
+        if (!proposalId) return jsonRes({ error: 'Falta proposalId' }, 400);
+        const { executeApproved } = await import('./agent.js');
+        const result = await executeApproved(proposalId, env);
+        return jsonRes(result);
+      } catch(e) { return jsonRes({ error: e.message }, 500); }
+    }
+
+    // ── AGENTE: leer archivo del repo ──────────────────────
+    if (path === '/agent/file' && request.method === 'POST') {
+      try {
+        const { file } = await request.json();
+        const { readFile } = await import('./agent.js');
+        const result = await readFile(file || 'src/index.js', env.GITHUB_PAT);
+        return jsonRes({ ok: true, content: result.content.slice(0, 5000), sha: result.sha });
+      } catch(e) { return jsonRes({ error: e.message }, 500); }
+    }
+
+    // ── AGENTE: ver commits ────────────────────────────────
+    if (path === '/agent/commits' && request.method === 'GET') {
+      try {
+        const { getCommits } = await import('./agent.js');
+        const commits = await getCommits(env.GITHUB_PAT);
+        return jsonRes({ ok: true, commits });
+      } catch(e) { return jsonRes({ error: e.message }, 500); }
+    }
+
+    // ── AGENTE: ver actions ────────────────────────────────
+    if (path === '/agent/actions' && request.method === 'GET') {
+      try {
+        const { getActions } = await import('./agent.js');
+        const actions = await getActions(env.GITHUB_PAT);
+        return jsonRes({ ok: true, actions });
+      } catch(e) { return jsonRes({ error: e.message }, 500); }
+    }
+
+    // ── AGENTE: ver issues ─────────────────────────────────
+    if (path === '/agent/issues' && request.method === 'GET') {
+      try {
+        const { getIssues } = await import('./agent.js');
+        const issues = await getIssues(env.GITHUB_PAT);
+        return jsonRes({ ok: true, issues });
+      } catch(e) { return jsonRes({ error: e.message }, 500); }
+    }
+
+    // ── AGENTE: listar archivos ────────────────────────────
+    if (path === '/agent/files' && request.method === 'GET') {
+      try {
+        const { listFiles } = await import('./agent.js');
+        const files = await listFiles('src', env.GITHUB_PAT);
+        return jsonRes({ ok: true, files });
+      } catch(e) { return jsonRes({ error: e.message }, 500); }
+    }
+
+    // ── AGENTE: status general ─────────────────────────────
+    if (path === '/agent/status' && request.method === 'GET') {
+      try {
+        const { getCommits, getActions, getIssues } = await import('./agent.js');
+        const [commits, actions, issues] = await Promise.all([
+          getCommits(env.GITHUB_PAT, 5),
+          getActions(env.GITHUB_PAT),
+          getIssues(env.GITHUB_PAT)
+        ]);
+        return jsonRes({ ok: true, commits, actions, issues, repo: 'cherryv1/HARI-KING' });
+      } catch(e) { return jsonRes({ error: e.message }, 500); }
+    }
+
     return new Response('HARI-KING — Not Found', { status: 404 });
   }
 };
