@@ -478,13 +478,21 @@ body{
 
 /* Aprobación ✅ */
 .hk-approval{
-  background:rgba(255,179,0,0.08);
-  border:1px solid rgba(255,179,0,0.3);
+  background:rgba(10,6,0,0.98);
+  border:1px solid rgba(255,179,0,0.5);
   border-radius:10px;
   padding:10px 12px;
   display:none;
   flex-direction:column;
   gap:8px;
+  max-height: 40vh;
+  overflow-y: auto;
+  position: fixed;
+  bottom: 70px;
+  left: 10px;
+  right: 10px;
+  z-index: 2000;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
 }
 .hk-approval-txt{font-size:11px;color:var(--text);line-height:1.5;}
 .hk-approval-btns{display:flex;gap:6px;}
