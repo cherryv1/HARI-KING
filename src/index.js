@@ -955,8 +955,11 @@ function clearHKImg() {
   document.getElementById('hk-img-input').value = '';
   document.getElementById('hk-img-preview').style.display = 'none';
 }
+let isSendingHK = false;
 
 async function sendHK() {
+  if (isSendingHK) return;
+  isSendingHK = true;
   const input = document.getElementById('hk-input');
   const msg = input.value.trim();
   if (!msg && !hkImg) return;
@@ -978,6 +981,7 @@ async function sendHK() {
     const d = await r.json();
 
     setHKEstado(false);
+    isSendingHK = false;
     setBeeState('idle');
     const reply = d.reply || d.response || '—';
     addHKMsg('bot', reply);
@@ -989,8 +993,10 @@ async function sendHK() {
     }
   } catch(e) {
     setHKEstado(false);
+    isSendingHK = false;
     setBeeState('idle');
     addHKMsg('bot', '⚠️ Error: ' + e.message);
+    isSendingHK = false;
   }
   clearHKImg();
 }
@@ -1024,6 +1030,7 @@ function approveAction() {
       }
     })
     .catch(e => { setBeeState('idle'); addHKMsg('bot', '⚠️ Error: ' + e.message); });
+    isSendingHK = false;
   } else {
     setBeeState('idle');
     addHKMsg('bot', '⚠️ No hay acción pendiente con datos suficientes');
