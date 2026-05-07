@@ -1008,7 +1008,26 @@ function approveAction() {
   addHKMsg('system', '✅ Baxto aprobó — ejecutando...');
   logAction('✅ Acción aprobada por Baxto');
   setBeeState('ejecutando');
-  setTimeout(() => { setBeeState('idle'); addHKMsg('bot', 'Acción ejecutada con éxito.'); }, 2000);
+  if (pendingAction && pendingAction.fileName && pendingAction.content) {
+    fetch('/admin/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(pendingAction)
+    })
+    .then(r => r.json())
+    .then(data => {
+      setBeeState('idle');
+      if (data.ok) {
+        addHKMsg('bot', '✅ Commit real ejecutado: ' + (pendingAction.commitMessage || 'cambio aplicado'));
+      } else {
+        addHKMsg('bot', '⚠️ Error: ' + JSON.stringify(data));
+      }
+    })
+    .catch(e => { setBeeState('idle'); addHKMsg('bot', '⚠️ Error: ' + e.message); });
+  } else {
+    setBeeState('idle');
+    addHKMsg('bot', '⚠️ No hay acción pendiente con datos suficientes');
+  }
   pendingAction = null;
 }
 
